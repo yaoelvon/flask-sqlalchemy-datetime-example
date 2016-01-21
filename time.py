@@ -23,7 +23,7 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
-#db.drop_all()
+db.drop_all()
 db.create_all()
 
 admin = User('admin', 'admin@example.com', datetime(2015, 6, 5, 8, 10, 10, 10))
