@@ -6,7 +6,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, './dbTest.db')
-db = SQLAlchemy(app)
+session_options = {'autocommit': False, 'autoflush': False}
+db = SQLAlchemy(app, session_options=session_options)
 
 
 class User(db.Model):
@@ -33,13 +34,28 @@ guest2 = User('guest2', 'guest2@example.com', datetime(2015, 6, 5, 11, 12, 12, 1
 db.session.add(admin)
 db.session.add(guest1)
 db.session.add(guest2)
+
+
+users = User.query.all()
+print "First: autoflush=False, query dont autoflush, users is:"
+print users
+
+db.session.flush()
+
+users = User.query.all()
+print "Second: manually flush, query back all info and can get id but not
+persist:"
+print users
+print users[0].id
+
 db.session.commit()
 
 users = User.query.all()
+print "Third: committed, data persisted"
 print users
 
 admin = User.query.filter_by(username='admin').first()
 print admin
 
-user_range = User.query.filter(User.pub_date < datetime(2015, 6, 5, 10, 20 ,11), User.pub_date >= datetime(2015, 6, 5, 9, 11 ,11)).all()
+user_range = User.query.filter(User.pub_date < datetime(2015, 6, 5, 10, 20, 11), User.pub_date >= datetime(2015, 6, 5, 9, 11 ,11)).all()
 print user_range
